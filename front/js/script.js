@@ -1,62 +1,46 @@
-const url_products = "http://localhost:3000/api/products";
-
 //1/invoquer l'api
-callAPI(url_products);
 
 function callAPI(url) {
-  fetch(url)
+  return fetch(url)
     .then(function (response) {
-      console.log(response);
       return response.json();
     })
 
-    .then(function (products) {
-      //2/traiter la reponse
-      scanProduct(products);
-    })
-    .catch(function (error) {
-      console.log(error);
-      alert(
+    .catch(function () {
+      return alert(
         "Une erreur est survenue, veuillez contacter l'administrateur du site!!"
       );
     });
 }
-function scanProduct(listProducts) {
-  console.log(listProducts);
-  /* listProducts.forEach(product => {
-    console.log("elements : "+product._id);
-  });*/
 
-  let html = "";
-  for (let product of listProducts) {
-    //3/afficher le produit en cours sur le html
-    html +=
-      ' <a href="./product.html?id="' +
-      product._id +
-      '"><article><img src="' +
-      product.imageUrl +
-      '" alt="' +
-      product.altTxt +
-      '"><h3 class="productName">' +
-      product.name +
-      '</h3><p class="productDescription">' +
-      product.description +
-      "</p></article></a>";
-  }
-  displayProducts(html);
-
-  /*
-  for(let k  in listProducts )
-  {
-    console.log("forIn : "+listProducts[k]._id);
-  }
-
-  for(let i=0; i<listProducts.length; i++)
- {
-  console.log('element '+ i +'est:'+listProducts[i]._id);
- }*/
+function scanProduct(products) {
+  return products
+    .map((element) => {
+      //3/afficher le produit en cours sur le html
+      return ` 
+      <a href="./product.html?id=${element._id}">
+        <article><img src="${element.imageUrl}" alt="${element.altTxt}">
+        <h3 class="productName">${element.name}</h3>
+        <p class="productDescription">${element.description}</p></article>
+      </a> 
+      `;
+    })
+    .join(""); // retire les ","
 }
 
-function displayProducts(htmlAllProducts) {
-  document.getElementById("items").innerHTML = htmlAllProducts;
+// fonction afficher dans la page index.html via DOM
+
+function displayProducts(contenair, products) {
+  contenair.innerHTML = scanProduct(products);
 }
+
+// stock emplacement html
+const items = document.getElementById("items");
+// déclare l'url de l'API
+const url = "http://localhost:3000/api/products";
+
+function main() {
+  callAPI(url).then((data) => displayProducts(items, data));
+}
+
+main();
